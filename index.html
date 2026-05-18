@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>ClassTube Pro</title>
+
+  <link rel="stylesheet" href="style.css"/>
+
+  <!-- QR CODE -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+  <header>
+    <h1>🎓 ClassTube Pro</h1>
+    <p>Safe Classroom Video Platform</p>
+
+    <button id="themeToggle">
+      🌙 Toggle Theme
+    </button>
+  </header>
+
+  <main>
+
+    <!-- VIDEO INPUT -->
+    <section class="card">
+
+      <h2>Load Video</h2>
+
+      <div class="input-group">
+        <input
+          type="text"
+          id="youtubeLink"
+          placeholder="Paste YouTube link..."
+        />
+
+        <button onclick="loadVideo()">
+          Load
+        </button>
+      </div>
+
+      <div class="options">
+
+        <label>
+          <input type="checkbox" id="autoplay">
+          Autoplay
+        </label>
+
+        <label>
+          Start Time:
+          <input type="number" id="startTime" value="0">
+        </label>
+
+      </div>
+
+    </section>
+
+    <!-- PLAYER -->
+    <section class="card">
+
+      <h2>Player</h2>
+
+      <div class="player-container" id="playerContainer">
+
+        <iframe
+          id="videoFrame"
+          allowfullscreen
+        ></iframe>
+
+      </div>
+
+      <div class="actions">
+
+        <button onclick="fullscreenPlayer()">
+          Fullscreen
+        </button>
+
+        <button onclick="copyShareLink()">
+          Copy Link
+        </button>
+
+        <button onclick="saveLesson()">
+          Save Lesson
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- NOTES -->
+    <section class="card">
+
+      <h2>Teacher Notes</h2>
+
+      <textarea
+        id="teacherNotes"
+        placeholder="Write lesson notes here..."
+      ></textarea>
+
+    </section>
+
+    <!-- PLAYLIST -->
+    <section class="card">
+
+      <h2>Saved Lessons</h2>
+
+      <div id="lessonList"></div>
+
+    </section>
+
+    <!-- QR -->
+    <section class="card">
+
+      <h2>Student QR Access</h2>
+
+      <div id="qrcode"></div>
+
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
