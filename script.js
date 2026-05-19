@@ -69,11 +69,30 @@ function renderSeats() {
     const seat = document.createElement("div");
     seat.classList.add("seat");
 
+    // Seat Number
+    const seatNumber = i + 1;
+
+    // Seat Color Groups
+    if (seatNumber >= 1 && seatNumber <= 8) {
+      seat.classList.add("yellow-seat");
+    } else if (seatNumber >= 9 && seatNumber <= 16) {
+      seat.classList.add("blue-seat");
+    } else if (seatNumber >= 17 && seatNumber <= 25) {
+      seat.classList.add("red-seat");
+    }
+
+    // Content
     if (currentStudents[i]) {
-      seat.textContent = currentStudents[i];
+      seat.innerHTML = `
+        <div class="seat-number">${seatNumber}</div>
+        <div class="student-name">${currentStudents[i]}</div>
+      `;
     } else {
-      seat.textContent = "Empty";
       seat.classList.add("empty");
+      seat.innerHTML = `
+        <div class="seat-number">${seatNumber}</div>
+        <div class="student-name">Empty</div>
+      `;
     }
 
     seatGrid.appendChild(seat);
