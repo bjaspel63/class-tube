@@ -1,201 +1,123 @@
-const iframe =
-  document.getElementById("videoFrame");
+// script.js
 
-const lessonList =
-  document.getElementById("lessonList");
+// TIMER
+let timer;
+let totalSeconds = 300;
 
-/* THEME TOGGLE */
+function updateTimerDisplay() {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
 
-document
-  .getElementById("themeToggle")
-  .addEventListener("click", () => {
-
-    document.body.classList.toggle("light-mode");
-
-  });
-
-/* EXTRACT VIDEO ID */
-
-function extractVideoID(url) {
-
-  const regExp =
-    /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-
-  const match = url.match(regExp);
-
-  return (match && match[2].length === 11)
-    ? match[2]
-    : null;
+  document.getElementById("timerDisplay").innerText =
+    `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
 }
 
-/* LOAD VIDEO */
+function startTimer() {
+  const input = document.getElementById("minutesInput").value;
 
-function loadVideo() {
-
-  const url =
-    document.getElementById("youtubeLink").value;
-
-  const videoID =
-    extractVideoID(url);
-
-  if (!videoID) {
-    alert("Invalid YouTube URL");
-    return;
+  if(input){
+    totalSeconds = input * 60;
   }
 
-  const autoplay =
-    document.getElementById("autoplay").checked ? 1 : 0;
+  clearInterval(timer);
 
-  const startTime =
-    document.getElementById("startTime").value || 0;
-
-  const embedURL =
-    `https://www.youtube.com/embed/${videoID}?rel=0&modestbranding=1&autoplay=${autoplay}&start=${startTime}`;
-
-  iframe.src = embedURL;
-
-  generateQR(embedURL);
+  timer = setInterval(() => {
+    if(totalSeconds > 0){
+      totalSeconds--;
+      updateTimerDisplay();
+    } else {
+      clearInterval(timer);
+      alert("Time is up!");
+    }
+  },1000);
 }
 
-/* FULLSCREEN */
-
-function fullscreenPlayer() {
-
-  const player =
-    document.getElementById("playerContainer");
-
-  if (player.requestFullscreen) {
-    player.requestFullscreen();
-  }
+function pauseTimer(){
+  clearInterval(timer);
 }
 
-/* COPY LINK */
-
-function copyShareLink() {
-
-  navigator.clipboard.writeText(iframe.src);
-
-  alert("Link copied!");
+function resetTimer(){
+  clearInterval(timer);
+  totalSeconds = 300;
+  updateTimerDisplay();
 }
 
-/* QR CODE */
+updateTimerDisplay();
 
-function generateQR(link) {
 
-  const qr =
-    document.getElementById("qrcode");
+// SEATING CHART
+function generateSeats(){
+  const names = document.getElementById("studentNames")
+    .value
+    .split(",")
+    .map(name => name.trim())
+    .filter(name => name !== "");
 
-  qr.innerHTML = "";
+  names.sort(() => Math.random() - 0.5);
 
-  new QRCode(qr, {
-    text: link,
-    width: 180,
-    height: 180
-  });
-}
+  const output = document.getElementById("seatOutput");
+  output.innerHTML = "";
 
-/* SAVE LESSON */
-
-function saveLesson() {
-
-  const video =
-    iframe.src;
-
-  const notes =
-    document.getElementById("teacherNotes").value;
-
-  if (!video) {
-    alert("Load a video first.");
-    return;
-  }
-
-  const lessons =
-    JSON.parse(localStorage.getItem("lessons")) || [];
-
-  lessons.push({
-    video,
-    notes
-  });
-
-  localStorage.setItem(
-    "lessons",
-    JSON.stringify(lessons)
-  );
-
-  renderLessons();
-
-  alert("Lesson saved!");
-}
-
-/* RENDER LESSONS */
-
-function renderLessons() {
-
-  const lessons =
-    JSON.parse(localStorage.getItem("lessons")) || [];
-
-  lessonList.innerHTML = "";
-
-  lessons.forEach((lesson, index) => {
-
-    const div =
-      document.createElement("div");
-
-    div.classList.add("lesson-item");
-
+  names.forEach((name,index) => {
+    const div = document.createElement("div");
+    div.classList.add("seat");
     div.innerHTML = `
-      <p><strong>Lesson ${index + 1}</strong></p>
-
-      <p>${lesson.notes || "No notes"}</p>
-
-      <button onclick="loadSavedLesson(${index})">
-        Open
-      </button>
-
-      <button onclick="deleteLesson(${index})">
-        Delete
-      </button>
+      <strong>Seat ${index + 1}</strong><br>
+      ${name}
     `;
-
-    lessonList.appendChild(div);
-
+    output.appendChild(div);
   });
-
 }
 
-/* LOAD SAVED LESSON */
 
-function loadSavedLesson(index) {
+// BEHAVIOR TRACKER
+const behaviorData = {};
 
-  const lessons =
-    JSON.parse(localStorage.getItem("lessons"));
+function renderBehavior(){
+  const list = document.getElementById("behaviorList");
+  list.innerHTML = "";
 
-  iframe.src =
-    lessons[index].video;
-
-  document.getElementById("teacherNotes").value =
-    lessons[index].notes;
-
-  generateQR(lessons[index].video);
+  Object.keys(behaviorData).forEach(student => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <strong>${student}</strong> : ${behaviorData[student]} pts
+    `;
+    list.appendChild(li);
+  });
 }
 
-/* DELETE */
+function addPoint(){
+  const name = document.getElementById("behaviorName").value.trim();
 
-function deleteLesson(index) {
+  if(!name) return;
 
-  const lessons =
-    JSON.parse(localStorage.getItem("lessons"));
+  behaviorData[name] = (behaviorData[name] || 0) + 1;
 
-  lessons.splice(index, 1);
-
-  localStorage.setItem(
-    "lessons",
-    JSON.stringify(lessons)
-  );
-
-  renderLessons();
+  renderBehavior();
 }
 
-/* INIT */
+function removePoint(){
+  const name = document.getElementById("behaviorName").value.trim();
 
-renderLessons();
+  if(!name) return;
+
+  behaviorData[name] = (behaviorData[name] || 0) - 1;
+
+  renderBehavior();
+}
+
+
+// QR GENERATOR
+function generateQR(){
+  const text = document.getElementById("qrText").value;
+
+  const qrContainer = document.getElementById("qrcode");
+
+  qrContainer.innerHTML = "";
+
+  QRCode.toCanvas(text, function (err, canvas) {
+    if(err) console.error(err);
+
+    qrContainer.appendChild(canvas);
+  });
+}
