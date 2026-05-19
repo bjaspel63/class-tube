@@ -1,123 +1,87 @@
 // script.js
 
-// TIMER
-let timer;
-let totalSeconds = 300;
+const studentInput = document.getElementById("studentNames");
+const rowsInput = document.getElementById("rows");
+const colsInput = document.getElementById("cols");
 
-function updateTimerDisplay() {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
+const generateBtn = document.getElementById("generateBtn");
+const shuffleBtn = document.getElementById("shuffleBtn");
+const clearBtn = document.getElementById("clearBtn");
 
-  document.getElementById("timerDisplay").innerText =
-    `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
-}
+const seatGrid = document.getElementById("seatGrid");
 
-function startTimer() {
-  const input = document.getElementById("minutesInput").value;
+let currentStudents = [];
 
-  if(input){
-    totalSeconds = input * 60;
-  }
+generateBtn.addEventListener("click", generateSeats);
+shuffleBtn.addEventListener("click", shuffleSeats);
+clearBtn.addEventListener("click", clearSeats);
 
-  clearInterval(timer);
-
-  timer = setInterval(() => {
-    if(totalSeconds > 0){
-      totalSeconds--;
-      updateTimerDisplay();
-    } else {
-      clearInterval(timer);
-      alert("Time is up!");
-    }
-  },1000);
-}
-
-function pauseTimer(){
-  clearInterval(timer);
-}
-
-function resetTimer(){
-  clearInterval(timer);
-  totalSeconds = 300;
-  updateTimerDisplay();
-}
-
-updateTimerDisplay();
-
-
-// SEATING CHART
-function generateSeats(){
-  const names = document.getElementById("studentNames")
-    .value
-    .split(",")
+function getStudents() {
+  return studentInput.value
+    .split("\n")
     .map(name => name.trim())
     .filter(name => name !== "");
-
-  names.sort(() => Math.random() - 0.5);
-
-  const output = document.getElementById("seatOutput");
-  output.innerHTML = "";
-
-  names.forEach((name,index) => {
-    const div = document.createElement("div");
-    div.classList.add("seat");
-    div.innerHTML = `
-      <strong>Seat ${index + 1}</strong><br>
-      ${name}
-    `;
-    output.appendChild(div);
-  });
 }
 
-
-// BEHAVIOR TRACKER
-const behaviorData = {};
-
-function renderBehavior(){
-  const list = document.getElementById("behaviorList");
-  list.innerHTML = "";
-
-  Object.keys(behaviorData).forEach(student => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <strong>${student}</strong> : ${behaviorData[student]} pts
-    `;
-    list.appendChild(li);
-  });
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
 }
 
-function addPoint(){
-  const name = document.getElementById("behaviorName").value.trim();
+function generateSeats() {
+  currentStudents = getStudents();
 
-  if(!name) return;
+  if (currentStudents.length === 0) {
+    alert("Please enter student names.");
+    return;
+  }
 
-  behaviorData[name] = (behaviorData[name] || 0) + 1;
-
-  renderBehavior();
+  shuffleArray(currentStudents);
+  renderSeats();
 }
 
-function removePoint(){
-  const name = document.getElementById("behaviorName").value.trim();
+function shuffleSeats() {
+  if (currentStudents.length === 0) {
+    currentStudents = getStudents();
+  }
 
-  if(!name) return;
+  if (currentStudents.length === 0) {
+    alert("Please enter student names first.");
+    return;
+  }
 
-  behaviorData[name] = (behaviorData[name] || 0) - 1;
-
-  renderBehavior();
+  shuffleArray(currentStudents);
+  renderSeats();
 }
 
+function renderSeats() {
+  const rows = parseInt(rowsInput.value);
+  const cols = parseInt(colsInput.value);
 
-// QR GENERATOR
-function generateQR(){
-  const text = document.getElementById("qrText").value;
+  seatGrid.innerHTML = "";
+  seatGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
-  const qrContainer = document.getElementById("qrcode");
+  const totalSeats = rows * cols;
 
-  qrContainer.innerHTML = "";
+  for (let i = 0; i < totalSeats; i++) {
+    const seat = document.createElement("div");
+    seat.classList.add("seat");
 
-  QRCode.toCanvas(text, function (err, canvas) {
-    if(err) console.error(err);
+    if (currentStudents[i]) {
+      seat.textContent = currentStudents[i];
+    } else {
+      seat.textContent = "Empty";
+      seat.classList.add("empty");
+    }
 
-    qrContainer.appendChild(canvas);
-  });
+    seatGrid.appendChild(seat);
+  }
+}
+
+function clearSeats() {
+  studentInput.value = "";
+  seatGrid.innerHTML = "";
+  currentStudents = [];
 }
