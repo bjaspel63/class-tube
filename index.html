@@ -1,126 +1,79 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  <title>ClassTube Pro</title>
-
+  <title>Classroom Tools Suite</title>
   <link rel="stylesheet" href="style.css"/>
-
-  <!-- QR CODE -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
   <header>
-    <h1>🎓 ClassTube Pro</h1>
-    <p>Safe Classroom Video Platform</p>
-
-    <button id="themeToggle">
-      🌙 Toggle Theme
-    </button>
+    <h1>📚 Classroom Tools Suite</h1>
+    <p>Teacher Productivity Toolkit</p>
   </header>
 
-  <main>
+  <main class="grid">
 
-    <!-- VIDEO INPUT -->
+    <!-- TIMER -->
     <section class="card">
+      <h2>⏰ Classroom Timer</h2>
 
-      <h2>Load Video</h2>
+      <div class="timer-display" id="timerDisplay">05:00</div>
 
-      <div class="input-group">
-        <input
-          type="text"
-          id="youtubeLink"
-          placeholder="Paste YouTube link..."
-        />
+      <input type="number" id="minutesInput" placeholder="Minutes" min="1"/>
 
-        <button onclick="loadVideo()">
-          Load
-        </button>
+      <div class="buttons">
+        <button onclick="startTimer()">Start</button>
+        <button onclick="pauseTimer()">Pause</button>
+        <button onclick="resetTimer()">Reset</button>
       </div>
-
-      <div class="options">
-
-        <label>
-          <input type="checkbox" id="autoplay">
-          Autoplay
-        </label>
-
-        <label>
-          Start Time:
-          <input type="number" id="startTime" value="0">
-        </label>
-
-      </div>
-
     </section>
 
-    <!-- PLAYER -->
+    <!-- SEATING CHART -->
     <section class="card">
+      <h2>🪑 Seating Chart Generator</h2>
 
-      <h2>Player</h2>
+      <textarea id="studentNames" placeholder="Enter names separated by commas"></textarea>
 
-      <div class="player-container" id="playerContainer">
+      <button onclick="generateSeats()">Generate Seating</button>
 
-        <iframe
-          id="videoFrame"
-          allowfullscreen
-        ></iframe>
+      <div id="seatOutput" class="seat-grid"></div>
+    </section>
 
+    <!-- BEHAVIOR TRACKER -->
+    <section class="card">
+      <h2>⭐ Behavior Tracker</h2>
+
+      <input type="text" id="behaviorName" placeholder="Student Name"/>
+
+      <div class="buttons">
+        <button onclick="addPoint()">+ Positive</button>
+        <button onclick="removePoint()">- Negative</button>
       </div>
 
-      <div class="actions">
-
-        <button onclick="fullscreenPlayer()">
-          Fullscreen
-        </button>
-
-        <button onclick="copyShareLink()">
-          Copy Link
-        </button>
-
-        <button onclick="saveLesson()">
-          Save Lesson
-        </button>
-
-      </div>
-
+      <ul id="behaviorList"></ul>
     </section>
 
-    <!-- NOTES -->
+    <!-- QR GENERATOR -->
     <section class="card">
+      <h2>🔗 QR Code Generator</h2>
 
-      <h2>Teacher Notes</h2>
+      <input type="text" id="qrText" placeholder="Enter URL or text"/>
 
-      <textarea
-        id="teacherNotes"
-        placeholder="Write lesson notes here..."
-      ></textarea>
-
-    </section>
-
-    <!-- PLAYLIST -->
-    <section class="card">
-
-      <h2>Saved Lessons</h2>
-
-      <div id="lessonList"></div>
-
-    </section>
-
-    <!-- QR -->
-    <section class="card">
-
-      <h2>Student QR Access</h2>
+      <button onclick="generateQR()">Generate QR</button>
 
       <div id="qrcode"></div>
-
     </section>
 
   </main>
 
+  <footer>
+    Classroom Tools Suite Prototype
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script src="script.js"></script>
 
 </body>
