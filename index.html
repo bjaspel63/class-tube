@@ -4,77 +4,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Classroom Tools Suite</title>
+  <title>Classroom Seat Generator</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
-  <header>
-    <h1>📚 Classroom Tools Suite</h1>
-    <p>Teacher Productivity Toolkit</p>
-  </header>
+  <div class="container">
+    <h1>🎓 Classroom Seat Generator</h1>
 
-  <main class="grid">
+    <div class="controls">
+      <textarea id="studentNames" placeholder="Enter student names (one per line)"></textarea>
 
-    <!-- TIMER -->
-    <section class="card">
-      <h2>⏰ Classroom Timer</h2>
+      <div class="settings">
+        <div>
+          <label>Rows</label>
+          <input type="number" id="rows" value="4" min="1">
+        </div>
 
-      <div class="timer-display" id="timerDisplay">05:00</div>
-
-      <input type="number" id="minutesInput" placeholder="Minutes" min="1"/>
-
-      <div class="buttons">
-        <button onclick="startTimer()">Start</button>
-        <button onclick="pauseTimer()">Pause</button>
-        <button onclick="resetTimer()">Reset</button>
-      </div>
-    </section>
-
-    <!-- SEATING CHART -->
-    <section class="card">
-      <h2>🪑 Seating Chart Generator</h2>
-
-      <textarea id="studentNames" placeholder="Enter names separated by commas"></textarea>
-
-      <button onclick="generateSeats()">Generate Seating</button>
-
-      <div id="seatOutput" class="seat-grid"></div>
-    </section>
-
-    <!-- BEHAVIOR TRACKER -->
-    <section class="card">
-      <h2>⭐ Behavior Tracker</h2>
-
-      <input type="text" id="behaviorName" placeholder="Student Name"/>
-
-      <div class="buttons">
-        <button onclick="addPoint()">+ Positive</button>
-        <button onclick="removePoint()">- Negative</button>
+        <div>
+          <label>Columns</label>
+          <input type="number" id="cols" value="5" min="1">
+        </div>
       </div>
 
-      <ul id="behaviorList"></ul>
-    </section>
+      <div class="buttons">
+        <button id="generateBtn">Generate Seats</button>
+        <button id="shuffleBtn">Shuffle</button>
+        <button id="clearBtn">Clear</button>
+      </div>
+    </div>
 
-    <!-- QR GENERATOR -->
-    <section class="card">
-      <h2>🔗 QR Code Generator</h2>
+    <div class="teacher-area">👩‍🏫 TEACHER</div>
 
-      <input type="text" id="qrText" placeholder="Enter URL or text"/>
+    <div id="seatGrid" class="seat-grid"></div>
+  </div>
 
-      <button onclick="generateQR()">Generate QR</button>
-
-      <div id="qrcode"></div>
-    </section>
-
-  </main>
-
-  <footer>
-    Classroom Tools Suite Prototype
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script src="script.js"></script>
-
 </body>
 </html>
