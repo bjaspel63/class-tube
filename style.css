@@ -181,6 +181,16 @@ button:hover {
   word-break: break-word;
 }
 
+/* DRAG EFFECT */
+
+.student-name {
+  cursor: grab;
+}
+
+.student-name:active {
+  cursor: grabbing;
+}
+
 /* COLOR GROUPS */
 
 .yellow-seat {
