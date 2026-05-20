@@ -11,7 +11,7 @@ const seatGrid = document.getElementById("seatGrid");
 
 let currentStudents = [];
 
-// LOAD SAVED SEATS ON START
+// LOAD SAVED SEATS
 
 loadSavedSeats();
 
@@ -108,7 +108,7 @@ function renderSeats() {
 
     const seatNumber = i + 1;
 
-    // COLOR GROUPS
+    // COLORS
 
     if (seatNumber >= 1 && seatNumber <= 8) {
 
@@ -153,7 +153,7 @@ function renderSeats() {
   enableDragAndDrop();
 }
 
-// ENABLE DRAGGING
+// DRAG & DROP
 
 function enableDragAndDrop() {
 
@@ -166,6 +166,10 @@ function enableDragAndDrop() {
     // START DRAG
 
     name.addEventListener("dragstart", () => {
+
+      // DON'T DRAG EMPTY
+
+      if (name.innerText === "Empty") return;
 
       draggedItem = name;
 
@@ -194,21 +198,63 @@ function enableDragAndDrop() {
 
     name.addEventListener("drop", () => {
 
-      if (draggedItem !== name) {
+      // DON'T DROP INTO EMPTY
 
-        const temp = name.innerHTML;
-
-        name.innerHTML = draggedItem.innerHTML;
-
-        draggedItem.innerHTML = temp;
-
-        saveSeatsLocally();
+      if (
+        !draggedItem ||
+        draggedItem === name ||
+        name.innerText === "Empty"
+      ) {
+        return;
       }
+
+      // SWAP NAMES
+
+      const temp = name.innerHTML;
+
+      name.innerHTML = draggedItem.innerHTML;
+
+      draggedItem.innerHTML = temp;
+
+      // FIX EMPTY POSITIONS
+
+      moveEmptySeatsToEnd();
+
+      // SAVE
+
+      saveSeatsLocally();
     });
   });
 }
 
-// SAVE TO LOCAL STORAGE
+// MOVE EMPTY TO END
+
+function moveEmptySeatsToEnd() {
+
+  const names = [];
+
+  document.querySelectorAll(".student-name").forEach(name => {
+
+    names.push(name.innerText);
+  });
+
+  // REMOVE EMPTY
+
+  const filled = names.filter(name => name !== "Empty");
+
+  // ADD EMPTY AT END
+
+  while (filled.length < 25) {
+
+    filled.push("Empty");
+  }
+
+  currentStudents = filled;
+
+  renderSeats();
+}
+
+// SAVE LOCAL STORAGE
 
 function saveSeatsLocally() {
 
@@ -225,7 +271,7 @@ function saveSeatsLocally() {
   );
 }
 
-// LOAD SAVED SEATS
+// LOAD LOCAL STORAGE
 
 function loadSavedSeats() {
 
