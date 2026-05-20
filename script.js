@@ -11,6 +11,10 @@ const seatGrid = document.getElementById("seatGrid");
 
 let currentStudents = [];
 
+// LOAD SAVED SEATS
+
+loadSavedSeats();
+
 // EVENTS
 
 generateBtn.addEventListener("click", generateSeats);
@@ -40,25 +44,31 @@ function shuffleArray(array) {
   }
 }
 
-// GENERATE
+// GENERATE SEATS
 
 function generateSeats() {
 
   currentStudents = getStudents();
 
   if (currentStudents.length === 0) {
+
     alert("Please enter student names.");
+
     return;
   }
 
   if (currentStudents.length > 25) {
+
     alert("Maximum is 25 students only.");
+
     return;
   }
 
   shuffleArray(currentStudents);
 
   renderSeats();
+
+  saveSeatsLocally();
 }
 
 // SHUFFLE AGAIN
@@ -66,20 +76,25 @@ function generateSeats() {
 function shuffleSeats() {
 
   if (currentStudents.length === 0) {
+
     currentStudents = getStudents();
   }
 
   if (currentStudents.length === 0) {
+
     alert("Please enter student names first.");
+
     return;
   }
 
   shuffleArray(currentStudents);
 
   renderSeats();
+
+  saveSeatsLocally();
 }
 
-// RENDER
+// RENDER SEATS
 
 function renderSeats() {
 
@@ -108,22 +123,27 @@ function renderSeats() {
       seat.classList.add("red-seat");
     }
 
-    // CONTENT
+    // STUDENT NAME
+
+    const studentName = currentStudents[i] || "Empty";
+
+    // HTML
 
     seat.innerHTML = `
       <div class="seat-number">
-        Seat ${seatNumber}
+        ${seatNumber}
       </div>
 
       <div class="student-name"
            draggable="true">
-           ${currentStudents[i] || "Empty"}
+           ${studentName}
       </div>
     `;
 
     // EMPTY STYLE
 
-    if (!currentStudents[i]) {
+    if (studentName === "Empty") {
+
       seat.classList.add("empty");
     }
 
@@ -143,37 +163,87 @@ function enableDragAndDrop() {
 
   names.forEach(name => {
 
+    // START DRAG
+
     name.addEventListener("dragstart", () => {
 
       draggedItem = name;
 
       setTimeout(() => {
+
         name.style.opacity = "0.5";
+
       }, 0);
     });
+
+    // END DRAG
 
     name.addEventListener("dragend", () => {
 
       name.style.opacity = "1";
     });
 
+    // ALLOW DROP
+
     name.addEventListener("dragover", e => {
 
       e.preventDefault();
     });
 
+    // DROP
+
     name.addEventListener("drop", () => {
 
-      if (draggedItem !== name) {
-
-        const temp = name.innerHTML;
-
-        name.innerHTML = draggedItem.innerHTML;
-
-        draggedItem.innerHTML = temp;
+      if (
+        !draggedItem ||
+        draggedItem === name
+      ) {
+        return;
       }
+
+      // SWAP NAMES
+
+      const temp = name.innerHTML;
+
+      name.innerHTML = draggedItem.innerHTML;
+
+      draggedItem.innerHTML = temp;
+
+      // SAVE
+
+      saveSeatsLocally();
     });
   });
+}
+
+// SAVE LOCAL STORAGE
+
+function saveSeatsLocally() {
+
+  const seatNames = [];
+
+  document.querySelectorAll(".student-name").forEach(name => {
+
+    seatNames.push(name.innerText);
+  });
+
+  localStorage.setItem(
+    "classroomSeats",
+    JSON.stringify(seatNames)
+  );
+}
+
+// LOAD LOCAL STORAGE
+
+function loadSavedSeats() {
+
+  const savedSeats = localStorage.getItem("classroomSeats");
+
+  if (!savedSeats) return;
+
+  currentStudents = JSON.parse(savedSeats);
+
+  renderSeats();
 }
 
 // SAVE PDF
@@ -183,10 +253,20 @@ function savePDF() {
   const element = document.getElementById("pdfContent");
 
   const options = {
+
     margin: 0.5,
+
     filename: "classroom-seating-chart.pdf",
-    image: { type: "jpeg", quality: 1 },
-    html2canvas: { scale: 2 },
+
+    image: {
+      type: "jpeg",
+      quality: 1
+    },
+
+    html2canvas: {
+      scale: 2
+    },
+
     jsPDF: {
       unit: "in",
       format: "a4",
@@ -194,10 +274,13 @@ function savePDF() {
     }
   };
 
-  html2pdf().set(options).from(element).save();
+  html2pdf()
+    .set(options)
+    .from(element)
+    .save();
 }
 
-// CLEAR
+// CLEAR EVERYTHING
 
 function clearSeats() {
 
@@ -206,5 +289,6 @@ function clearSeats() {
   seatGrid.innerHTML = "";
 
   currentStudents = [];
+
+  localStorage.removeItem("classroomSeats");
 }
-update this fully
