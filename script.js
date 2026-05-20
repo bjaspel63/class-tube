@@ -116,7 +116,7 @@ function renderSeats() {
 
       seat.innerHTML = `
         <div class="seat-number">
-          Seat ${seatNumber}
+          ${seatNumber}
         </div>
 
         <div class="student-name">
