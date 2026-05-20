@@ -1,35 +1,37 @@
 // script.js
 
 const studentInput = document.getElementById("studentNames");
-const rowsInput = document.getElementById("rows");
-const colsInput = document.getElementById("cols");
 
 const generateBtn = document.getElementById("generateBtn");
 const shuffleBtn = document.getElementById("shuffleBtn");
+const pdfBtn = document.getElementById("pdfBtn");
 const clearBtn = document.getElementById("clearBtn");
 
 const seatGrid = document.getElementById("seatGrid");
 
 let currentStudents = [];
 
-// BUTTON EVENTS
+// EVENTS
 
 generateBtn.addEventListener("click", generateSeats);
 shuffleBtn.addEventListener("click", shuffleSeats);
+pdfBtn.addEventListener("click", savePDF);
 clearBtn.addEventListener("click", clearSeats);
 
 // GET STUDENTS
 
 function getStudents() {
+
   return studentInput.value
     .split("\n")
     .map(name => name.trim())
     .filter(name => name !== "");
 }
 
-// SHUFFLE ARRAY
+// SHUFFLE
 
 function shuffleArray(array) {
+
   for (let i = array.length - 1; i > 0; i--) {
 
     const j = Math.floor(Math.random() * (i + 1));
@@ -38,7 +40,7 @@ function shuffleArray(array) {
   }
 }
 
-// GENERATE SEATS
+// GENERATE
 
 function generateSeats() {
 
@@ -46,6 +48,11 @@ function generateSeats() {
 
   if (currentStudents.length === 0) {
     alert("Please enter student names.");
+    return;
+  }
+
+  if (currentStudents.length > 25) {
+    alert("Maximum is 25 students only.");
     return;
   }
 
@@ -59,10 +66,12 @@ function generateSeats() {
 function shuffleSeats() {
 
   if (currentStudents.length === 0) {
+
     currentStudents = getStudents();
   }
 
   if (currentStudents.length === 0) {
+
     alert("Please enter student names first.");
     return;
   }
@@ -76,16 +85,9 @@ function shuffleSeats() {
 
 function renderSeats() {
 
-  const rows = parseInt(rowsInput.value);
-  const cols = parseInt(colsInput.value);
-
   seatGrid.innerHTML = "";
 
-  seatGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-
-  const totalSeats = rows * cols;
-
-  for (let i = 0; i < totalSeats; i++) {
+  for (let i = 0; i < 25; i++) {
 
     const seat = document.createElement("div");
 
@@ -93,7 +95,7 @@ function renderSeats() {
 
     const seatNumber = i + 1;
 
-    // COLOR GROUPS
+    // COLORS
 
     if (seatNumber >= 1 && seatNumber <= 8) {
 
@@ -103,12 +105,12 @@ function renderSeats() {
 
       seat.classList.add("blue-seat");
 
-    } else if (seatNumber >= 17 && seatNumber <= 25) {
+    } else {
 
       seat.classList.add("red-seat");
     }
 
-    // STUDENT OR EMPTY
+    // STUDENT
 
     if (currentStudents[i]) {
 
@@ -141,7 +143,28 @@ function renderSeats() {
   }
 }
 
-// CLEAR EVERYTHING
+// SAVE PDF
+
+function savePDF() {
+
+  const element = document.getElementById("pdfContent");
+
+  const options = {
+    margin: 0.5,
+    filename: "classroom-seating-chart.pdf",
+    image: { type: "jpeg", quality: 1 },
+    html2canvas: { scale: 2 },
+    jsPDF: {
+      unit: "in",
+      format: "a4",
+      orientation: "portrait"
+    }
+  };
+
+  html2pdf().set(options).from(element).save();
+}
+
+// CLEAR
 
 function clearSeats() {
 
