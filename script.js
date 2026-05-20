@@ -28,7 +28,7 @@ function getStudents() {
     .filter(name => name !== "");
 }
 
-// SHUFFLE
+// SHUFFLE ARRAY
 
 function shuffleArray(array) {
 
@@ -66,12 +66,10 @@ function generateSeats() {
 function shuffleSeats() {
 
   if (currentStudents.length === 0) {
-
     currentStudents = getStudents();
   }
 
   if (currentStudents.length === 0) {
-
     alert("Please enter student names first.");
     return;
   }
@@ -81,7 +79,7 @@ function shuffleSeats() {
   renderSeats();
 }
 
-// RENDER SEATS
+// RENDER
 
 function renderSeats() {
 
@@ -110,37 +108,72 @@ function renderSeats() {
       seat.classList.add("red-seat");
     }
 
-    // STUDENT
+    // CONTENT
 
-    if (currentStudents[i]) {
+    seat.innerHTML = `
+      <div class="seat-number">
+        Seat ${seatNumber}
+      </div>
 
-      seat.innerHTML = `
-        <div class="seat-number">
-          ${seatNumber}
-        </div>
+      <div class="student-name"
+           draggable="true">
+           ${currentStudents[i] || "Empty"}
+      </div>
+    `;
 
-        <div class="student-name">
-          ${currentStudents[i]}
-        </div>
-      `;
+    // EMPTY STYLE
 
-    } else {
-
+    if (!currentStudents[i]) {
       seat.classList.add("empty");
-
-      seat.innerHTML = `
-        <div class="seat-number">
-          Seat ${seatNumber}
-        </div>
-
-        <div class="student-name">
-          Empty
-        </div>
-      `;
     }
 
     seatGrid.appendChild(seat);
   }
+
+  enableDragAndDrop();
+}
+
+// DRAG & DROP
+
+function enableDragAndDrop() {
+
+  const names = document.querySelectorAll(".student-name");
+
+  let draggedItem = null;
+
+  names.forEach(name => {
+
+    name.addEventListener("dragstart", () => {
+
+      draggedItem = name;
+
+      setTimeout(() => {
+        name.style.opacity = "0.5";
+      }, 0);
+    });
+
+    name.addEventListener("dragend", () => {
+
+      name.style.opacity = "1";
+    });
+
+    name.addEventListener("dragover", e => {
+
+      e.preventDefault();
+    });
+
+    name.addEventListener("drop", () => {
+
+      if (draggedItem !== name) {
+
+        const temp = name.innerHTML;
+
+        name.innerHTML = draggedItem.innerHTML;
+
+        draggedItem.innerHTML = temp;
+      }
+    });
+  });
 }
 
 // SAVE PDF
