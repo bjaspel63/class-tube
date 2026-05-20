@@ -11,10 +11,6 @@ const seatGrid = document.getElementById("seatGrid");
 
 let currentStudents = [];
 
-// LOAD SAVED SEATS
-
-loadSavedSeats();
-
 // EVENTS
 
 generateBtn.addEventListener("click", generateSeats);
@@ -44,31 +40,25 @@ function shuffleArray(array) {
   }
 }
 
-// GENERATE SEATS
+// GENERATE
 
 function generateSeats() {
 
   currentStudents = getStudents();
 
   if (currentStudents.length === 0) {
-
     alert("Please enter student names.");
-
     return;
   }
 
   if (currentStudents.length > 25) {
-
     alert("Maximum is 25 students only.");
-
     return;
   }
 
   shuffleArray(currentStudents);
 
   renderSeats();
-
-  saveSeatsLocally();
 }
 
 // SHUFFLE AGAIN
@@ -76,25 +66,20 @@ function generateSeats() {
 function shuffleSeats() {
 
   if (currentStudents.length === 0) {
-
     currentStudents = getStudents();
   }
 
   if (currentStudents.length === 0) {
-
     alert("Please enter student names first.");
-
     return;
   }
 
   shuffleArray(currentStudents);
 
   renderSeats();
-
-  saveSeatsLocally();
 }
 
-// RENDER SEATS
+// RENDER
 
 function renderSeats() {
 
@@ -123,27 +108,22 @@ function renderSeats() {
       seat.classList.add("red-seat");
     }
 
-    // STUDENT NAME
-
-    const studentName = currentStudents[i] || "Empty";
-
-    // HTML
+    // CONTENT
 
     seat.innerHTML = `
       <div class="seat-number">
-        ${seatNumber}
+        Seat ${seatNumber}
       </div>
 
       <div class="student-name"
            draggable="true">
-           ${studentName}
+           ${currentStudents[i] || "Empty"}
       </div>
     `;
 
     // EMPTY STYLE
 
-    if (studentName === "Empty") {
-
+    if (!currentStudents[i]) {
       seat.classList.add("empty");
     }
 
@@ -163,125 +143,37 @@ function enableDragAndDrop() {
 
   names.forEach(name => {
 
-    // START DRAG
-
     name.addEventListener("dragstart", () => {
-
-      // DON'T DRAG EMPTY
-
-      if (name.innerText === "Empty") return;
 
       draggedItem = name;
 
       setTimeout(() => {
-
         name.style.opacity = "0.5";
-
       }, 0);
     });
-
-    // END DRAG
 
     name.addEventListener("dragend", () => {
 
       name.style.opacity = "1";
     });
 
-    // ALLOW DROP
-
     name.addEventListener("dragover", e => {
 
       e.preventDefault();
     });
 
-    // DROP
-
     name.addEventListener("drop", () => {
 
-      // DON'T DROP INTO EMPTY
+      if (draggedItem !== name) {
 
-      if (
-        !draggedItem ||
-        draggedItem === name ||
-        name.innerText === "Empty"
-      ) {
-        return;
+        const temp = name.innerHTML;
+
+        name.innerHTML = draggedItem.innerHTML;
+
+        draggedItem.innerHTML = temp;
       }
-
-      // SWAP NAMES
-
-      const temp = name.innerHTML;
-
-      name.innerHTML = draggedItem.innerHTML;
-
-      draggedItem.innerHTML = temp;
-
-      // FIX EMPTY POSITIONS
-
-      moveEmptySeatsToEnd();
-
-      // SAVE
-
-      saveSeatsLocally();
     });
   });
-}
-
-// MOVE EMPTY TO END
-
-function moveEmptySeatsToEnd() {
-
-  const names = [];
-
-  document.querySelectorAll(".student-name").forEach(name => {
-
-    names.push(name.innerText);
-  });
-
-  // REMOVE EMPTY
-
-  const filled = names.filter(name => name !== "Empty");
-
-  // ADD EMPTY AT END
-
-  while (filled.length < 25) {
-
-    filled.push("Empty");
-  }
-
-  currentStudents = filled;
-
-  renderSeats();
-}
-
-// SAVE LOCAL STORAGE
-
-function saveSeatsLocally() {
-
-  const seatNames = [];
-
-  document.querySelectorAll(".student-name").forEach(name => {
-
-    seatNames.push(name.innerText);
-  });
-
-  localStorage.setItem(
-    "classroomSeats",
-    JSON.stringify(seatNames)
-  );
-}
-
-// LOAD LOCAL STORAGE
-
-function loadSavedSeats() {
-
-  const savedSeats = localStorage.getItem("classroomSeats");
-
-  if (!savedSeats) return;
-
-  currentStudents = JSON.parse(savedSeats);
-
-  renderSeats();
 }
 
 // SAVE PDF
@@ -291,20 +183,10 @@ function savePDF() {
   const element = document.getElementById("pdfContent");
 
   const options = {
-
     margin: 0.5,
-
     filename: "classroom-seating-chart.pdf",
-
-    image: {
-      type: "jpeg",
-      quality: 1
-    },
-
-    html2canvas: {
-      scale: 2
-    },
-
+    image: { type: "jpeg", quality: 1 },
+    html2canvas: { scale: 2 },
     jsPDF: {
       unit: "in",
       format: "a4",
@@ -312,13 +194,10 @@ function savePDF() {
     }
   };
 
-  html2pdf()
-    .set(options)
-    .from(element)
-    .save();
+  html2pdf().set(options).from(element).save();
 }
 
-// CLEAR EVERYTHING
+// CLEAR
 
 function clearSeats() {
 
@@ -327,6 +206,5 @@ function clearSeats() {
   seatGrid.innerHTML = "";
 
   currentStudents = [];
-
-  localStorage.removeItem("classroomSeats");
 }
+update this fully
