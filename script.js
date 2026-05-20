@@ -127,19 +127,6 @@ function renderSeats() {
 
     const studentName = currentStudents[i] || "Empty";
 
-    // HTML
-
-    seat.innerHTML = `
-      <div class="seat-number">
-        ${seatNumber}
-      </div>
-
-      <div class="student-name"
-           draggable="true">
-           ${studentName}
-      </div>
-    `;
-
     // EMPTY STYLE
 
     if (studentName === "Empty") {
@@ -147,71 +134,94 @@ function renderSeats() {
       seat.classList.add("empty");
     }
 
+    // HTML
+
+    seat.innerHTML = `
+      <div class="seat-number">
+        ${seatNumber}
+      </div>
+
+      <div class="student-name">
+        ${studentName}
+      </div>
+    `;
+
     seatGrid.appendChild(seat);
   }
 
   enableDragAndDrop();
 }
 
-// DRAG & DROP
+// DRAG & DROP SEAT TILES
 
 function enableDragAndDrop() {
 
-  const names = document.querySelectorAll(".student-name");
+  const seats = document.querySelectorAll(".seat");
 
-  let draggedItem = null;
+  let draggedSeat = null;
 
-  names.forEach(name => {
+  seats.forEach(seat => {
+
+    // MAKE TILE DRAGGABLE
+
+    seat.setAttribute("draggable", true);
 
     // START DRAG
 
-    name.addEventListener("dragstart", () => {
+    seat.addEventListener("dragstart", () => {
 
-      draggedItem = name;
+      draggedSeat = seat;
 
       setTimeout(() => {
 
-        name.style.opacity = "0.5";
+        seat.style.opacity = "0.5";
 
       }, 0);
     });
 
     // END DRAG
 
-    name.addEventListener("dragend", () => {
+    seat.addEventListener("dragend", () => {
 
-      name.style.opacity = "1";
+      seat.style.opacity = "1";
     });
 
     // ALLOW DROP
 
-    name.addEventListener("dragover", e => {
+    seat.addEventListener("dragover", e => {
 
       e.preventDefault();
     });
 
     // DROP
 
-    name.addEventListener("drop", () => {
+    seat.addEventListener("drop", () => {
 
       if (
-        !draggedItem ||
-        draggedItem === name
+        !draggedSeat ||
+        draggedSeat === seat
       ) {
         return;
       }
 
-      // SWAP NAMES
+      // SWAP FULL TILE CONTENT
 
-      const temp = name.innerHTML;
+      const draggedHTML = draggedSeat.innerHTML;
+      const draggedClass = draggedSeat.className;
 
-      name.innerHTML = draggedItem.innerHTML;
+      draggedSeat.innerHTML = seat.innerHTML;
+      draggedSeat.className = seat.className;
 
-      draggedItem.innerHTML = temp;
+      seat.innerHTML = draggedHTML;
+      seat.className = draggedClass;
 
       // SAVE
 
       saveSeatsLocally();
+
+      // RE-ENABLE EVENTS
+
+      enableDragAndDrop();
     });
   });
 }
@@ -220,16 +230,19 @@ function enableDragAndDrop() {
 
 function saveSeatsLocally() {
 
-  const seatNames = [];
+  const seats = [];
 
-  document.querySelectorAll(".student-name").forEach(name => {
+  document.querySelectorAll(".seat").forEach(seat => {
 
-    seatNames.push(name.innerText);
+    seats.push({
+      html: seat.innerHTML,
+      className: seat.className
+    });
   });
 
   localStorage.setItem(
     "classroomSeats",
-    JSON.stringify(seatNames)
+    JSON.stringify(seats)
   );
 }
 
@@ -241,9 +254,22 @@ function loadSavedSeats() {
 
   if (!savedSeats) return;
 
-  currentStudents = JSON.parse(savedSeats);
+  const seats = JSON.parse(savedSeats);
 
-  renderSeats();
+  seatGrid.innerHTML = "";
+
+  seats.forEach(savedSeat => {
+
+    const seat = document.createElement("div");
+
+    seat.className = savedSeat.className;
+
+    seat.innerHTML = savedSeat.html;
+
+    seatGrid.appendChild(seat);
+  });
+
+  enableDragAndDrop();
 }
 
 // SAVE PDF
