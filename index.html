@@ -1,4 +1,5 @@
 <!-- index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,21 +11,25 @@
 <body>
 
   <div class="container">
+
     <h1>🎓 Classroom Seat Generator</h1>
 
     <div class="controls">
+
       <textarea id="studentNames" placeholder="Enter student names (one per line)"></textarea>
 
       <div class="settings">
+
         <div>
           <label>Rows</label>
-          <input type="number" id="rows" value="4" min="1">
+          <input type="number" id="rows" value="5" min="1">
         </div>
 
         <div>
           <label>Columns</label>
           <input type="number" id="cols" value="5" min="1">
         </div>
+
       </div>
 
       <div class="buttons">
@@ -32,11 +37,15 @@
         <button id="shuffleBtn">Shuffle</button>
         <button id="clearBtn">Clear</button>
       </div>
+
     </div>
 
-    <div class="teacher-area">👩‍🏫 TEACHER</div>
+    <div class="teacher-area">
+      👩‍🏫 TEACHER
+    </div>
 
     <div id="seatGrid" class="seat-grid"></div>
+
   </div>
 
   <script src="script.js"></script>
